@@ -1,6 +1,9 @@
-import java.util.Random;
+package cipher;
 
-class Cipher {
+import java.util.Random;
+import java.util.stream.IntStream;
+
+public class Cipher {
     static final int MIN = 32;
     static final int MAX = 126; 
     static final int DEFAULT_KEY_LENGTH = 10;
@@ -20,14 +23,10 @@ class Cipher {
             if (index==keyArr.length) {
                 index = 0;
             }
-            
-            while (v<MIN) {
-                v = v + MAX - MIN + 1;
-            } while (v>MAX) {
-                v = v - MAX + MIN - 1;
+            while (v<MIN || v>MAX) {
+                v += (v<MIN? 1:-1)*(MAX - MIN + 1);
             }
             out += (char)v;
-            
         } 
         return out;
     }
@@ -35,13 +34,11 @@ class Cipher {
     public static String newKey() {
         return newKey(DEFAULT_KEY_LENGTH);
     }
-    
     public static String newKey(int length) {
-        String k = "";
-        for (int i = 0 ; i < length ; i++) {
-            int c = (Math.abs(rng.nextInt())%(MAX-MIN)+MIN);
-            k += (char)c;
-        }
-        return k;
+        StringBuffer buffer = new StringBuffer();
+        IntStream.range(0,length).forEach(x ->
+            buffer.append((char)(Math.abs(rng.nextInt())%(MAX-MIN)+MIN))
+        );
+        return buffer.toString();
     }
 }
